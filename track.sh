@@ -1,5 +1,4 @@
-#!/usr/bin/sh
-
+#!/bin/sh
 set -eu
 
 repo="$HOME/sysconfig"
