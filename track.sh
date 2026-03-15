@@ -6,11 +6,10 @@ repo="$HOME/sysconfig"
 fileToTrack="$(realpath "$1")"
 branch="$(cat /etc/hostname)"
 
-echo $fileToTrack
-echo $repo
-echo $branch
-
-git -C $repo checkout $branch
+# auto-create branch for host if it doesn't exist:
+git -C $repo checkout -b $branch 2>/dev/null || git -C $repo checkout $branch
 
 cp --parents $fileToTrack $repo
 git -C $repo add -f -- "./$fileToTrack"
+
+echo "Staged $fileToTrack"
