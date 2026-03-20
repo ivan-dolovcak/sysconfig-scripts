@@ -40,4 +40,4 @@ mv "$MANIFEST_PATH.copy" "$MANIFEST_PATH"
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
 echo "Staged $fileToTrack."
 
-. ./check-modified.sh
+. ./lib/check_modified.sh
