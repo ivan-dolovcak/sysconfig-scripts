@@ -1,8 +1,7 @@
 #!/bin/sh
-# checks if tracked files got modified after staging/committing
+# Check if tracked files got modified after staging/committing in local mirror.
 
-find "$REPO_PATH" \( -name .git -o -name .gitignore -o -name manifest \) \
-    -prune -o ! -path "$REPO_PATH" -print |
+find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o -print |
 while IFS= read -r pathPart; do
     [ ! -f "$pathPart" ] && continue
 
