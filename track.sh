@@ -15,7 +15,7 @@ fi
 mkdir -p "$(dirname "$fileToTrackLocal")"
 cp "$fileToTrack" "$fileToTrackLocal"
 
-[ ! -e "$MANIFEST_PATH" ] || touch "$MANIFEST_PATH"
+[ -e "$MANIFEST_PATH" ] || touch "$MANIFEST_PATH"
 cp "$MANIFEST_PATH" "$MANIFEST_PATH.copy"
 
 pathPart="$fileToTrackLocal"
@@ -38,3 +38,5 @@ mv "$MANIFEST_PATH.copy" "$MANIFEST_PATH"
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
 
 echo "Staged $fileToTrack"
+
+. ./check-modified.sh
