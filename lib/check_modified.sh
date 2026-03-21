@@ -15,11 +15,17 @@ while IFS= read -r pathPart; do
 
     if ! cmp -s "$pathPart" "$realPathPart"; then
         echo "Tracked file $realPathPart was modified."
+        continue
     fi
 
     realStat=$(get_stat "$realPathPart")
     manifestStat=$(\
         awk -F '\t' -v path="$realPathPart" '$5 == path' "$MANIFEST_PATH")
+
+    if [ -z "$manifestStat" ]; then
+        echo "New file: $realPathPart";
+        continue
+    fi
     
     echo $realStat;
     echo $manifestStat;

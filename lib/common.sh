@@ -9,6 +9,7 @@ export MANIFEST_IGNORE='
     -name .git
     -o -name .gitignore
     -o -name manifest
+    -o -name manifest.unstaged
 '
 
 get_stat()

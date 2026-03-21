@@ -15,20 +15,9 @@ fi
 mkdir -p "$(dirname "$fileToTrackLocal")"
 cp "$fileToTrack" "$fileToTrackLocal"
 
-# Prepare the manifest file.
-[ -e "$MANIFEST_PATH" ] || touch "$MANIFEST_PATH"
-cp "$MANIFEST_PATH" "$MANIFEST_PATH.copy.$$"
-
 pathPart="$fileToTrackLocal"
 while :; do
     [ "$pathPart" != "$REPO_PATH" ] || break
-    
-    # Update manifest (owners and permissions).
-    realPathPart=${pathPart#"$REPO_PATH"}
-    awk -F '\t' -v path="$realPathPart" '$5 != path' "$MANIFEST_PATH.copy.$$" \
-        > "$MANIFEST_PATH.tmp.$$"
-    get_stat "$pathPart" >> "$MANIFEST_PATH.tmp.$$"
-    mv "$MANIFEST_PATH.tmp.$$" "$MANIFEST_PATH.copy.$$"
 
     # Normalize permissions for the mirrored file.
     chmod u=rwX,g=rX,o=rX "$pathPart"
@@ -36,7 +25,19 @@ while :; do
     
     pathPart="$(dirname "$pathPart")"
 done
-mv "$MANIFEST_PATH.copy.$$" "$MANIFEST_PATH"
+
+# Regenerate manifest (owners and permissions).
+
+touch "$MANIFEST_PATH"
+:> "$MANIFEST_PATH.unstaged"
+
+find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
+    \( ! -path "$REPO_PATH" \) -print |
+while IFS= read -r pathPart; do
+    if [ -e "${pathPart#"$REPO_PATH"}" ]; then
+        get_stat "$pathPart" >> "$MANIFEST_PATH.unstaged"
+    fi
+done
 
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
 git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH"
