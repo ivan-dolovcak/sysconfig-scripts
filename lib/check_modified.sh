@@ -15,7 +15,6 @@ while IFS= read -r pathPart; do
 
     if ! cmp -s "$pathPart" "$realPathPart"; then
         echo "Tracked file $realPathPart was modified."
-        continue
     fi
 
     realStat=$(get_stat "$realPathPart")
@@ -27,9 +26,6 @@ while IFS= read -r pathPart; do
         continue
     fi
     
-    echo $realStat;
-    echo $manifestStat;
-
     if [ "$realStat" != "$manifestStat" ]; then
         echo "Stats of tracked file $realPathPart were modified."
     fi

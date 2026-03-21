@@ -7,8 +7,8 @@ fileToTrack="$(realpath "$1")"
 fileToTrackLocal="$REPO_PATH$fileToTrack"
 
 # Auto-create branch for host if it doesn't exist.
-if ! git -C "$REPO_PATH" checkout -b "$BRANCH" 2>/dev/null; then
-    git -C "$REPO_PATH" checkout "$BRANCH" 2>/dev/null
+if ! git -C "$REPO_PATH" checkout -b "$BRANCH" >/dev/null 2>&1; then
+    git -C "$REPO_PATH" checkout "$BRANCH" >/dev/null 2>&1
 fi
 
 # Copy the file and its complete directory structure (mirror).
@@ -39,8 +39,8 @@ while IFS= read -r pathPart; do
     fi
 done
 
-git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
-git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH"
+git -C "$REPO_PATH" add -f -- "$fileToTrackLocal" >/dev/null 2>&1
+git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH" >/dev/null 2>&1
 echo "Staged $fileToTrack."
 
 . ./lib/check_modified.sh
