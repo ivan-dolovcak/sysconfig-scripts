@@ -26,3 +26,19 @@ get_stat()
 
     printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$realPath"
 }
+
+# Generate the manifest file from the already existing mirrored files and
+# directories in local git repository.
+generate_manifest()
+{
+    touch "$MANIFEST_PATH"
+    :> "$MANIFEST_PATH.unstaged"
+
+    find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
+        \( ! -path "$REPO_PATH" \) -print |
+    while IFS= read -r pathPart; do
+        if [ -e "${pathPart#"$REPO_PATH"}" ]; then
+            get_stat "$pathPart" >> "$MANIFEST_PATH.unstaged"
+        fi
+    done
+}

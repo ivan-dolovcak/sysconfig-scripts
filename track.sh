@@ -27,17 +27,7 @@ while :; do
 done
 
 # Regenerate manifest (owners and permissions).
-
-touch "$MANIFEST_PATH"
-:> "$MANIFEST_PATH.unstaged"
-
-find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
-    \( ! -path "$REPO_PATH" \) -print |
-while IFS= read -r pathPart; do
-    if [ -e "${pathPart#"$REPO_PATH"}" ]; then
-        get_stat "$pathPart" >> "$MANIFEST_PATH.unstaged"
-    fi
-done
+generate_manifest
 
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal" >/dev/null 2>&1
 git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH" >/dev/null 2>&1
