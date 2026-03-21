@@ -13,11 +13,11 @@ export MANIFEST_IGNORE='
 
 get_stat()
 {
-    mode=$(stat -c '%a' -- "$1")
-    uid=$(stat -c '%u' -- "$1")
-    gid=$(stat -c '%g' -- "$1")
     realPath=${1#"$REPO_PATH"}
-    if [ -d "$1" ]; then
+    mode=$(stat -c '%a' -- "$realPath")
+    uid=$(stat -c '%u' -- "$realPath")
+    gid=$(stat -c '%g' -- "$realPath")
+    if [ -d "$realPath" ]; then
         type=d
     else    
         type=f
