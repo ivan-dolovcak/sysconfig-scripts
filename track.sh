@@ -42,4 +42,3 @@ git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
 echo "Staged $fileToTrack."
 
 . ./lib/check_modified.sh
-#
