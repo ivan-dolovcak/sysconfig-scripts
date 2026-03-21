@@ -17,7 +17,7 @@ cp "$fileToTrack" "$fileToTrackLocal"
 
 # Prepare the manifest file.
 [ -e "$MANIFEST_PATH" ] || touch "$MANIFEST_PATH"
-cp "$MANIFEST_PATH" "$MANIFEST_PATH.copy"
+cp "$MANIFEST_PATH" "$MANIFEST_PATH.copy.$$"
 
 pathPart="$fileToTrackLocal"
 while :; do
@@ -25,10 +25,10 @@ while :; do
     
     # Update manifest (owners and permissions).
     realPathPart=${pathPart#"$REPO_PATH"}
-    awk -F '\t' -v path="$realPathPart" '$5 != path' "$MANIFEST_PATH.copy" \
-        > "$MANIFEST_PATH.tmp"
-    get_stat "$pathPart" >> "$MANIFEST_PATH.tmp"
-    mv "$MANIFEST_PATH.tmp" "$MANIFEST_PATH.copy"
+    awk -F '\t' -v path="$realPathPart" '$5 != path' "$MANIFEST_PATH.copy.$$" \
+        > "$MANIFEST_PATH.tmp.$$"
+    get_stat "$pathPart" >> "$MANIFEST_PATH.tmp.$$"
+    mv "$MANIFEST_PATH.tmp.$$" "$MANIFEST_PATH.copy.$$"
 
     # Normalize permissions for the mirrored file.
     chmod u=rwX,g=rX,o=rX "$pathPart"
@@ -36,9 +36,10 @@ while :; do
     
     pathPart="$(dirname "$pathPart")"
 done
-mv "$MANIFEST_PATH.copy" "$MANIFEST_PATH"
+mv "$MANIFEST_PATH.copy.$$" "$MANIFEST_PATH"
 
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
+git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH"
 echo "Staged $fileToTrack."
 
 . ./lib/check_modified.sh
