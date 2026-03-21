@@ -9,11 +9,22 @@ while IFS= read -r pathPart; do
     realPathPart=${pathPart#"$REPO_PATH"}
 
     if [ ! -e "$realPathPart" ]; then
-        echo "Tracked file $realPathPart was deleted."
+        echo "Tracked file $realPathPart was deleted or moved."
         continue
     fi
 
     if ! cmp -s "$pathPart" "$realPathPart"; then
         echo "Tracked file $realPathPart was modified."
+    fi
+
+    realStat=$(get_stat "$realPathPart")
+    manifestStat=$(\
+        awk -F '\t' -v path="$realPathPart" '$5 == path' "$MANIFEST_PATH")
+    
+    echo $realStat;
+    echo $manifestStat;
+
+    if [ "$realStat" != "$manifestStat" ]; then
+        echo "Stats of tracked file $realPathPart were modified."
     fi
 done
