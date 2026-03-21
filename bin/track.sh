@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
-
-. ./lib/common.sh
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$SCRIPT_DIR/../lib/common.sh"
 
 fileToTrack="$(realpath "$1")"
 fileToTrackLocal="$REPO_PATH$fileToTrack"
@@ -33,4 +33,4 @@ git -C "$REPO_PATH" add -f -- "$fileToTrackLocal" >/dev/null 2>&1
 git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH" >/dev/null 2>&1
 echo "Staged $fileToTrack."
 
-. ./lib/check_modified.sh
+. "$SCRIPT_DIR/../lib/check_modified.sh"
