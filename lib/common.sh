@@ -16,11 +16,12 @@ get_stat()
     mode=$(stat -c '%a' -- "$1")
     uid=$(stat -c '%u' -- "$1")
     gid=$(stat -c '%g' -- "$1")
+    realPath=${1#"$REPO_PATH"}
     if [ -d "$1" ]; then
         type=d
     else    
         type=f
     fi
 
-    printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$1"
+    printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$realPath"
 }

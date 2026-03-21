@@ -24,7 +24,8 @@ while :; do
     [ "$pathPart" != "$REPO_PATH" ] || break
     
     # Update manifest (owners and permissions).
-    awk -F '\t' -v path="$pathPart" '$5 != path' "$MANIFEST_PATH.copy" \
+    realPathPart=${pathPart#"$REPO_PATH"}
+    awk -F '\t' -v path="$realPathPart" '$5 != path' "$MANIFEST_PATH.copy" \
         > "$MANIFEST_PATH.tmp"
     get_stat "$pathPart" >> "$MANIFEST_PATH.tmp"
     mv "$MANIFEST_PATH.tmp" "$MANIFEST_PATH.copy"
@@ -41,3 +42,4 @@ git -C "$REPO_PATH" add -f -- "$fileToTrackLocal"
 echo "Staged $fileToTrack."
 
 . ./lib/check_modified.sh
+#
