@@ -15,7 +15,7 @@ while IFS= read -r pathPart; do
     realPathPart=${pathPart#"$REPO_PATH"}
 
     if [ ! -e "$realPathPart" ]; then
-        log_info "Tracked file $realPathPart was deleted or moved."
+        log_status "Tracked file $realPathPart was deleted or moved."
         flag_changed=1
         continue
     fi
@@ -26,16 +26,16 @@ while IFS= read -r pathPart; do
     
     if [ "$realStat" != "$manifestStat" ]; then
         flag_changed=1
-        log_info "Stats of tracked file $realPathPart were modified."
+        log_status "Stats of tracked file $realPathPart were modified."
     fi
 
     [ ! -f "$pathPart" ] && continue
 
     if ! cmp -s "$pathPart" "$realPathPart"; then
         flag_changed=1
-        log_info "Tracked file $realPathPart was modified."
+        log_status "Tracked file $realPathPart was modified."
     fi
 done
 
 [ !flag_changed ] && 
-    log_info "No changes detected - mirrors are the same as real filesystem."
+    log_status "No changes detected - mirrors are the same as real filesystem."

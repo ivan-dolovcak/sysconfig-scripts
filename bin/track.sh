@@ -11,11 +11,7 @@ require_unprivileged
 fileToTrack="$(realpath "$1")"
 fileToTrackLocal="$REPO_PATH$fileToTrack"
 
-if [ -e "$fileToTrackLocal" ]; then
-    log_done "Retracking $fileToTrack."
-else
-    log_done "Tracking $fileToTrack."
-fi
+[ -e "$fileToTrackLocal" ] && retracking=1 || retracking=0
 
 # Auto-create branch for host if it doesn't exist.
 if ! git -C "$REPO_PATH" checkout -b "$BRANCH" >/dev/null 2>&1; then
@@ -42,3 +38,9 @@ done
 # Stage changes.
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal" >/dev/null 2>&1
 git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH" >/dev/null 2>&1
+
+if [ $retracking -eq 1 ]; then
+    log_done "Retracking $fileToTrack."
+else
+    log_done "Tracking $fileToTrack."
+fi
