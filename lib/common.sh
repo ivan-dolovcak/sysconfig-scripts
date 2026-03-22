@@ -81,34 +81,46 @@ upsert_manifest()
     realPath="${path#"$REPO_PATH"}"
     touch "$MANIFEST_PATH"
 
-    deleted=0
+    file_deleted=0
     stat=""
     if [ ! -e $path ] || [ ! -e $realPath ]; then
-        deleted=1
+        file_deleted=1
     else
         stat="$(get_stat "$realPath")"
     fi
 
-    if awk -F '\t' -v path="$realPath" -v stat="$stat" -v deleted=$deleted '
-        BEGIN { found=0 }
+    if awk -F '\t' \
+        -v path="$realPath" -v stat="$stat" -v file_deleted=$file_deleted '
+        BEGIN { lineFound=0 }
         $5 == path {
-            if (!deleted)
-                print stat
-            found=1
+            lineFound=1
+
+            if (file_deleted)
+                next
+            
+            if ($0 != stat)
+                updated=1
+
+            print stat
             next
         }
         { print }
         END {
-            if (!found && !deleted)
+            if (!lineFound && !file_deleted) {
                 print stat
+                exit 1 # line inserted
+            }
+            if (updated)
+                exit 2 # line updated
             
-            exit(found ? 0 : 1)
+            if (file_deleted)
+                exit 3 # line deleted
         }
     ' "$MANIFEST_PATH" > "$MANIFEST_PATH.tmp"
     then
-        lineFound=1
+        awkStatus=0
     else
-        lineFound=0
+        awkStatus=$?
     fi
 
     sort -t $'\t' -k5,5 "$MANIFEST_PATH.tmp" -o "$MANIFEST_PATH.tmp"
@@ -116,9 +128,14 @@ upsert_manifest()
     mv "$MANIFEST_PATH.tmp" "$MANIFEST_PATH"
     normalize_file "$MANIFEST_PATH"
 
-    if [ $deleted -eq 1 ]; then
-        log_info "Deleted manifest line for $realPath."
-    elif [ $lineFound -eq 0 ]; then
+    case "$awkStatus" in
+    1)
         log_info "Inserted manifest line for $realPath."
-    fi
+        ;;
+    2)
+        log_info "Updated manifest line for $realPath."
+        ;;
+    3)
+        log_info "Deleted manifest line for $realPath."
+    esac
 }
