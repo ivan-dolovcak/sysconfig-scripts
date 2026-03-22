@@ -3,6 +3,8 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
+require_unprivileged
+
 fileToTrack="$(realpath "$1")"
 fileToTrackLocal="$REPO_PATH$fileToTrack"
 
@@ -21,7 +23,7 @@ while :; do
 
     # Normalize permissions for the mirrored file.
     chmod u=rwX,g=rX,o=rX "$pathPart"
-    chown "$TARGET_USER:$TARGET_USER" "$pathPart"
+    chown "$USER:$USER" "$pathPart"
 
     upsert_manifest $pathPart
     

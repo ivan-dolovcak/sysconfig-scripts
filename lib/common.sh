@@ -1,9 +1,8 @@
 #!/bin/sh
 
-export TARGET_USER="ivek"
 BRANCH="$(cat /etc/hostname)"
 export BRANCH
-export REPO_PATH="/home/$TARGET_USER/sysconfig"
+export REPO_PATH="/home/ivek/sysconfig"
 export MANIFEST_PATH="$REPO_PATH/manifest"
 export MANIFEST_IGNORE='
     -name .git
@@ -11,6 +10,14 @@ export MANIFEST_IGNORE='
     -o -name manifest
     -o -name manifest.unstaged
 '
+
+require_unprivileged()
+{
+    if [ "$(id -u)" -eq 0 ]; then
+        echo "error: this script is not intended to be ran as root"
+        exit 1
+    fi
+}
 
 get_stat()
 {
