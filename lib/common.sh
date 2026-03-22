@@ -8,7 +8,6 @@ export MANIFEST_IGNORE='
     -name .git
     -o -name .gitignore
     -o -name manifest
-    -o -name manifest.unstaged
 '
 
 require_unprivileged()
@@ -31,12 +30,6 @@ get_stat()
     fi
 
     printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$1"
-}
-
-walk_repo()
-{
-    find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
-        \( ! -path "$REPO_PATH" \) -print
 }
 
 upsert_manifest()

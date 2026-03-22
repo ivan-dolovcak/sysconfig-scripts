@@ -36,5 +36,3 @@ done
 git -C "$REPO_PATH" add -f -- "$fileToTrackLocal" >/dev/null 2>&1
 git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH" >/dev/null 2>&1
 echo "Staged $fileToTrack."
-
-. "$SCRIPT_DIR/../lib/check_modified.sh"

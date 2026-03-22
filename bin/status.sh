@@ -1,8 +1,15 @@
 #!/bin/sh
 # Check if tracked files/directories got modified or deleted after
 # staging/committing in local mirror.
+set -eu
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$SCRIPT_DIR/../lib/common.sh"
 
-walk_repo | while IFS= read -r pathPart; do
+require_unprivileged
+
+find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
+    \( ! -path "$REPO_PATH" \) -print |
+while IFS= read -r pathPart; do
     realPathPart=${pathPart#"$REPO_PATH"}
 
     if [ ! -e "$realPathPart" ]; then
@@ -13,11 +20,6 @@ walk_repo | while IFS= read -r pathPart; do
     realStat=$(get_stat "$realPathPart")
     manifestStat=$(\
         awk -F '\t' -v path="$realPathPart" '$5 == path' "$MANIFEST_PATH")
-
-    if [ -z "$manifestStat" ]; then
-        echo "New file: $realPathPart";
-        continue
-    fi
     
     if [ "$realStat" != "$manifestStat" ]; then
         echo "Stats of tracked file $realPathPart were modified."
