@@ -24,4 +24,14 @@ su - $TARGET_USER -s /bin/sh -c \
     "git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal""
 upsert_manifest "$fileToUntrackLocal"
 
+# Delete empty parents from manifest.
+parent=$(dirname "$fileToUntrackLocal")
+while :; do
+    [ "$parent" != "$REPO_PATH" ] || break
+    
+    upsert_manifest $parent
+    
+    parent="$(dirname "$parent")"
+done
+
 log_done "Untracked $fileToUntrack."
