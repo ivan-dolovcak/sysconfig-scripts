@@ -1,7 +1,11 @@
 #!/bin/sh
+# Removes the mirror and stages the deletion. upsert_manifest also removes the
+# mirror's entry in the manifest.
 set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
+
+require_unprivileged
 
 fileToUntrack="$(realpath "$1")"
 fileToUntrackLocal="$REPO_PATH$fileToUntrack"
