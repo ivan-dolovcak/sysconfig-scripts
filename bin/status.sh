@@ -7,7 +7,8 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
 require_unprivileged
 
-flag_changed=0
+flag_changed="$SCRIPT_DIR/flag_changed.tmp"
+rm -f "$flag_changed"
 
 find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
     \( ! -path "$REPO_PATH" \) -print |
@@ -16,7 +17,7 @@ while IFS= read -r pathPart; do
 
     if [ ! -e "$realPathPart" ]; then
         log_status "Tracked file $realPathPart was deleted or moved."
-        flag_changed=1
+        touch "$flag_changed"
         continue
     fi
 
@@ -25,17 +26,19 @@ while IFS= read -r pathPart; do
         awk -F '\t' -v path="$realPathPart" '$5 == path' "$MANIFEST_PATH")
     
     if [ "$realStat" != "$manifestStat" ]; then
-        flag_changed=1
+        touch "$flag_changed"
         log_status "Stats of tracked file $realPathPart were modified."
     fi
 
     [ ! -f "$pathPart" ] && continue
 
     if ! cmp -s "$pathPart" "$realPathPart"; then
-        flag_changed=1
+        touch "$flag_changed"
         log_status "Tracked file $realPathPart was modified."
     fi
 done
 
-[ !flag_changed ] && 
+if [ ! -e $flag_changed ]; then
     log_status "No changes detected - mirrors are the same as real filesystem."
+fi
+rm -f "$flag_changed"
