@@ -38,7 +38,7 @@ done
 su - $TARGET_USER -s /bin/sh -c \
     "git -C "$REPO_PATH" add -f -- "$fileToTrackLocal""
 su - $TARGET_USER -s /bin/sh -c \
-    "git -C "$REPO_PATH" add -f -- "$MANIFEST_PATH""
+    "git -C "$REPO_PATH" add -- "$MANIFEST_PATH""
 
 if [ $retracking -eq 1 ]; then
     log_done "Retracking $fileToTrack."

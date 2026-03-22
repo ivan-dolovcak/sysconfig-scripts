@@ -34,4 +34,7 @@ while :; do
     parent="$(dirname "$parent")"
 done
 
+su - $TARGET_USER -s /bin/sh -c \
+    "git -C "$REPO_PATH" add -- "$MANIFEST_PATH""
+
 log_done "Untracked $fileToUntrack."
