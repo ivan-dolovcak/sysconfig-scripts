@@ -32,17 +32,29 @@ walk_repo()
         \( ! -path "$REPO_PATH" \) -print
 }
 
-# Generate the manifest file from the already existing mirrored files and
-# directories in local git repository.
-generate_manifest()
+upsert_manifest()
 {
+    path=$1
     touch "$MANIFEST_PATH"
-    :> "$MANIFEST_PATH.unstaged"
 
-    walk_repo | while IFS= read -r pathPart; do
-        realPathPart="${pathPart#"$REPO_PATH"}"
-        if [ -e $realPathPart ]; then
-            get_stat "$realPathPart" >> "$MANIFEST_PATH.unstaged"
-        fi
-    done
+    realPath="${path#"$REPO_PATH"}"
+    stat="$(get_stat "$realPath")"
+
+    awk -F '\t' -v path="$realPath" -v stat="$stat" '
+        BEGIN { found=0 }
+        $5 == path {
+            print stat
+            found=1
+            next
+        }
+        { print }
+        END {
+            if (!found)
+                print stat
+        }
+    ' "$MANIFEST_PATH" > "$MANIFEST_PATH.tmp"
+
+    sort -t $'\t' -k5,5 "$MANIFEST_PATH.tmp" -o "$MANIFEST_PATH.tmp"
+
+    mv "$MANIFEST_PATH.tmp" "$MANIFEST_PATH"
 }
