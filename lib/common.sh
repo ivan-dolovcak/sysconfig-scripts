@@ -89,34 +89,11 @@ upsert_manifest()
         stat="$(get_stat "$realPath")"
     fi
 
-    if awk -F '\t' \
-        -v path="$realPath" -v stat="$stat" -v file_deleted=$file_deleted '
-        BEGIN { lineFound=0 }
-        $5 == path {
-            lineFound=1
-
-            if (file_deleted)
-                next
-            
-            if ($0 != stat)
-                updated=1
-
-            print stat
-            next
-        }
-        { print }
-        END {
-            if (!lineFound && !file_deleted) {
-                print stat
-                exit 1 # line inserted
-            }
-            if (updated)
-                exit 2 # line updated
-            
-            if (file_deleted)
-                exit 3 # line deleted
-        }
-    ' "$MANIFEST_PATH" > "$MANIFEST_PATH.tmp"
+    # AWK call is wrapped in if...fi to capture its exit code.
+    # Using $? is not enough because of set -e.
+    if awk -F '\t' -f "$SCRIPT_DIR/../lib/upsert_manifest.awk" \
+        -v path="$realPath" -v stat="$stat" -v file_deleted=$file_deleted \
+        "$MANIFEST_PATH" > "$MANIFEST_PATH.tmp"
     then
         awkStatus=0
     else
