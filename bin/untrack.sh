@@ -11,18 +11,16 @@ fileToUntrack="$(realpath "$1")"
 fileToUntrackLocal="$REPO_PATH$fileToUntrack"
 
 if [ -e $fileToUntrack ] && [ ! -e $fileToUntrackLocal ]; then
-    echo "error: file $fileToUntrack is not tracked."
-    exit 1
+    die "File $fileToUntrack is not tracked."
 else
     if [ ! -e $fileToUntrackLocal ]; then
-        echo "error: file $fileToUntrack not found."
-        exit 1
+        die "File $fileToUntrack not found."
     else
-        echo "info: committing deletion of $fileToUntrack."
+        log_info "Committing deletion of $fileToUntrack."
     fi
 fi
 
 git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal" >/dev/null 2>&1
 upsert_manifest "$fileToUntrackLocal"
 
-echo "Untracked $fileToUntrack."
+log_done "Untracked $fileToUntrack."

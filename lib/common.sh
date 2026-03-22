@@ -10,12 +10,40 @@ export MANIFEST_IGNORE='
     -o -name manifest
 '
 
+log()
+{
+    level=$1
+    [ -t 1 ] && color=$2 || color=
+    shift 2
+
+    printf '%s\r[ %-6s]%s %s\n' "$color" "$level" "$(printf '\033[0m')" "$*"
+}
+
+log_done()
+{
+    log "DONE" "$(printf '\033[32m') " "$@"
+}
+log_info()
+{
+    log "INFO" "$(printf '\033[34m') " "$@"
+}
+log_warn()
+{
+    log "WARN" "$(printf '\033[33m') " "$@"
+}
+die()
+{
+    log "ERROR" "$(printf '\033[31m') " "$@"
+    exit 1
+}
+log_test()
+{
+    log "TEST" "$(printf '\033[35m') " "$@"
+}
+
 require_unprivileged()
 {
-    if [ "$(id -u)" -eq 0 ]; then
-        echo "error: this script is not intended to be ran as root"
-        exit 1
-    fi
+    [ "$(id -u)" -ne 0 ] || die "This script is not intended to be ran as root."
 }
 
 get_stat()
