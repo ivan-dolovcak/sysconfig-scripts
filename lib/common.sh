@@ -35,21 +35,28 @@ get_stat()
 upsert_manifest()
 {
     path=$1
+    realPath="${path#"$REPO_PATH"}"
     touch "$MANIFEST_PATH"
 
-    realPath="${path#"$REPO_PATH"}"
-    stat="$(get_stat "$realPath")"
+    deleted=0
+    stat=""
+    if [ ! -e $path ] || [ ! -e $realPath ]; then
+        deleted=1
+    else
+        stat="$(get_stat "$realPath")"
+    fi
 
-    awk -F '\t' -v path="$realPath" -v stat="$stat" '
+    awk -F '\t' -v path="$realPath" -v stat="$stat" -v deleted=$deleted '
         BEGIN { found=0 }
         $5 == path {
-            print stat
+            if (!deleted)
+                print stat
             found=1
             next
         }
         { print }
         END {
-            if (!found)
+            if (!found && !deleted)
                 print stat
         }
     ' "$MANIFEST_PATH" > "$MANIFEST_PATH.tmp"
