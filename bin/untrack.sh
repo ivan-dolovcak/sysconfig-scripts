@@ -21,7 +21,7 @@ else
 fi
 
 su - $TARGET_USER -s /bin/sh -c \
-    "git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal""
+    "git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal" >/dev/null 2>&1"
 upsert_manifest "$fileToUntrackLocal"
 
 # Delete empty parents from manifest.

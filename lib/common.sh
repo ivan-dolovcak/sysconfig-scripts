@@ -118,9 +118,7 @@ upsert_manifest()
 
     if [ $deleted -eq 1 ]; then
         log_info "Deleted manifest line for $realPath."
-    elif [ $lineFound -eq 1 ]; then
-        log_info "Updated manifest line for $realPath."
-    else
+    elif [ $lineFound -eq 0 ]; then
         log_info "Inserted manifest line for $realPath."
     fi
 }
