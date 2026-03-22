@@ -5,7 +5,7 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
-require_unprivileged
+require_root
 
 fileToUntrack="$(realpath "$1")"
 fileToUntrackLocal="$REPO_PATH$fileToUntrack"
@@ -20,7 +20,8 @@ else
     fi
 fi
 
-git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal" >/dev/null 2>&1
+su - $TARGET_USER -s /bin/sh -c \
+    "git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal""
 upsert_manifest "$fileToUntrackLocal"
 
 log_done "Untracked $fileToUntrack."

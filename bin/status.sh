@@ -5,7 +5,7 @@ set -eu
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
-require_unprivileged
+require_root
 
 flag_changed="$SCRIPT_DIR/flag_changed.tmp"
 rm -f "$flag_changed"
