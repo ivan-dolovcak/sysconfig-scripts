@@ -14,17 +14,16 @@ export MANIFEST_IGNORE='
 
 get_stat()
 {
-    realPath=${1#"$REPO_PATH"}
-    mode=$(stat -c '%a' -- "$realPath")
-    uid=$(stat -c '%u' -- "$realPath")
-    gid=$(stat -c '%g' -- "$realPath")
-    if [ -d "$realPath" ]; then
+    mode=$(stat -c '%a' -- "$1")
+    uid=$(stat -c '%u' -- "$1")
+    gid=$(stat -c '%g' -- "$1")
+    if [ -d "$1" ]; then
         type=d
     else    
         type=f
     fi
 
-    printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$realPath"
+    printf '%s\t%s\t%s\t%s\t%s\n' "$type" "$mode" "$uid" "$gid" "$1"
 }
 
 # Generate the manifest file from the already existing mirrored files and
@@ -37,8 +36,9 @@ generate_manifest()
     find "$REPO_PATH" \( $MANIFEST_IGNORE \) -prune -o \
         \( ! -path "$REPO_PATH" \) -print |
     while IFS= read -r pathPart; do
-        if [ -e "${pathPart#"$REPO_PATH"}" ]; then
-            get_stat "$pathPart" >> "$MANIFEST_PATH.unstaged"
+        realPathPart="${pathPart#"$REPO_PATH"}"
+        if [ -e $realPathPart ]; then
+            get_stat "$realPathPart" >> "$MANIFEST_PATH.unstaged"
         fi
     done
 }
