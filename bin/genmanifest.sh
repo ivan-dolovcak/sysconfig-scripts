@@ -1,7 +1,7 @@
 #!/bin/sh
 # Generate a manifest file from scratch.
 set -eu
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$(realpath "$0")")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
 require_root
