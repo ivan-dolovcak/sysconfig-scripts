@@ -117,9 +117,10 @@ upsert_manifest()
         awkStatus=$?
     fi
 
-    sort -t $'\t' -k5,5 "$MANIFEST_PATH.tmp" -o "$MANIFEST_PATH.tmp"
-
-    mv "$MANIFEST_PATH.tmp" "$MANIFEST_PATH"
+    tmpfile=$(mktemp)
+    sort -t "$(printf '\t')" -k5,5 "$MANIFEST_PATH.tmp" > "$tmpfile"
+    rm "$MANIFEST_PATH.tmp"
+    mv "$tmpfile" "$MANIFEST_PATH"
     normalize_file "$MANIFEST_PATH"
 
     case "$awkStatus" in
