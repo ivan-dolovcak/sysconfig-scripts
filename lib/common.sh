@@ -4,12 +4,12 @@ BRANCH="$(cat /etc/hostname)"
 export BRANCH
 export TARGET_USER="ivek"
 export REPO_PATH="/home/ivek/sysconfig"
-export MANIFEST_PATH="$REPO_PATH/manifest"
+export MANIFEST_PATH="$REPO_PATH/syscfg.manifest"
 export MANIFEST_IGNORE='
     -name .git
     -o -name .gitignore
-    -o -name manifest
-    -o -name manifest.tmp
+    -o -name syscfg.manifest
+    -o -name syscfg.manifest.tmp
 '
 
 log()
