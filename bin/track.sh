@@ -3,7 +3,7 @@
 # doesn't track the mode and ownership of a file. This metadata is stored
 # separately in a manifest file.
 set -eu
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$(realpath "$0")")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
 require_root

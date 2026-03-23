@@ -2,7 +2,7 @@
 # Check if tracked files/directories got modified or deleted after
 # staging/committing in local mirror.
 set -eu
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$(realpath "$0")")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 
 require_root
