@@ -15,10 +15,14 @@ if [ -e $fileToUntrack ] && [ ! -e $fileToUntrackLocal ]; then
 else
     if [ ! -e $fileToUntrackLocal ]; then
         die "File $fileToUntrack not found."
-    else
-        log_info "Committing deletion of $fileToUntrack."
     fi
 fi
+
+if ! confirm "Delete mirror of $fileToUntrack?"; then
+    exit
+fi
+
+log_info "Committing deletion of $fileToUntrack."
 
 su - $TARGET_USER -s /bin/sh -c \
     "git -C "$REPO_PATH" rm -f -- "$fileToUntrackLocal" >/dev/null 2>&1"

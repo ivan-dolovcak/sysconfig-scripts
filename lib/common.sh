@@ -46,6 +46,23 @@ log_test()
 {
     log "TEST" "$(printf '\033[35m') " "$@"
 }
+confirm()
+{
+    was_interrupted=0
+    trap 'was_interrupted=1' INT
+
+    printf "%s [y/N]: " "$1"
+
+    read -r cho
+
+    trap - INT
+    [ $was_interrupted -eq 1 ] && return 1
+
+    case $cho in
+        [yY]*) return 0 ;;
+        *)     return 1 ;;
+    esac
+}
 
 require_root()
 {
