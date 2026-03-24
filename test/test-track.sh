@@ -1,7 +1,7 @@
 #!/bin/sh
 # set -eu
 # set -x
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$(realpath "$0")")" && pwd)
 . "$SCRIPT_DIR/../lib/common.sh"
 . "$SCRIPT_DIR/lib/test_common.sh"
 
